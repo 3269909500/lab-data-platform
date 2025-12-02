@@ -11,6 +11,12 @@ app-compose.yml
 start-docker-services.sh
 test-services.sh
 
+# Docker和部署脚本
+Dockerfile
+deploy.sh
+docker-entrypoint.sh
+scripts/
+
 # 文档（保留README.md）
 使用指南-从零开始学习.md
 前端实现指南.md
