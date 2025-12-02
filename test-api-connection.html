@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API 连接测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-result {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .pending {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .api-path {
+            background-color: #e9ecef;
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        .flow-diagram {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 API 连接测试工具</h1>
+
+    <div class="test-section">
+        <h2>📊 请求流程说明</h2>
+        <div class="flow-diagram">
+            <strong>前端请求流程：</strong><br>
+            1. 前端发送: <code>http://localhost:3000/api/auth-service/auth/health</code><br>
+            2. Vite 代理转发到: <code>http://localhost:8080/api/auth-service/auth/health</code><br>
+            3. 网关匹配路由: <code>/api/auth-service/**</code><br>
+            4. 网转发发到: <code>http://localhost:8081/auth-service/auth/health</code><br>
+            5. <code>StripPrefix=1</code> 过滤器移除 <code>/api/auth-service</code><br>
+            6. 最终路径: <code>/auth-service/auth/health</code>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>🏥 认证服务测试</h2>
+        <div class="api-path">POST /api/auth-service/auth/health</div>
+        <button onclick="testAuthHealth()">测试认证服务健康检查</button>
+        <div id="auth-health-result" class="test-result pending">点击按钮开始测试...</div>
+
+        <div style="margin-top: 15px;">
+            <div class="api-path">POST /api/auth-service/auth/register</div>
+            <button onclick="testAuthRegister()">测试用户注册</button>
+            <div id="auth-register-result" class="test-result pending">点击按钮开始测试...</div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>🏢 系统服务测试</h2>
+        <div class="api-path">GET /api/laboratory/running</div>
+        <button onclick="testSystemLaboratory()">测试实验室服务</button>
+        <div id="system-laboratory-result" class="test-result pending">点击按钮开始测试...</div>
+    </div>
+
+    <div class="test-section">
+        <h2>📈 监控服务测试</h2>
+        <div class="api-path">GET /api/lab-monitor/health</div>
+        <button onclick="testMonitorHealth()">测试监控服务健康检查</button>
+        <div id="monitor-health-result" class="test-result pending">点击按钮开始测试...</div>
+
+        <div style="margin-top: 15px;">
+            <div class="api-path">GET /api/lab-monitor/test</div>
+            <button onclick="testMonitorTest()">测试监控服务接口</button>
+            <div id="monitor-test-result" class="test-result pending">点击按钮开始测试...</div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>🔧 配置检查</h2>
+        <div id="config-check-result" class="test-result pending">点击下方按钮检查配置...</div>
+        <button onclick="checkConfig()">检查所有配置</button>
+    </div>
+
+    <script>
+        const BASE_URL = '/api';
+
+        function updateResult(elementId, content, type = 'success') {
+            const element = document.getElementById(elementId);
+            element.className = `test-result ${type}`;
+            element.innerHTML = content;
+        }
+
+        async function testAuthHealth() {
+            updateResult('auth-health-result', '正在测试认证服务健康检查...', 'pending');
+
+            try {
+                const response = await fetch(`${BASE_URL}/auth-service/auth/health`, {
+                    method: 'GET'
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.code === 200) {
+                    updateResult('auth-health-result',
+                        `✅ 成功！<br>
+                        状态码: ${response.status}<br>
+                        响应: ${JSON.stringify(data, null, 2)}`,
+                        'success'
+                    );
+                } else {
+                    updateResult('auth-health-result',
+                        `❌ 失败！<br>
+                        状态码: ${response.status}<br>
+                        响应: ${JSON.stringify(data, null, 2)}`,
+                        'error'
+                    );
+                }
+            } catch (error) {
+                updateResult('auth-health-result',
+                    `❌ 错误！<br>
+                    错误信息: ${error.message}<br>
+                    请检查：<br>
+                    1. 网关服务是否在 8080 端口运行<br>
+                    2. 认证服务是否在 8081 端口运行<br>
+                    3. 前端代理配置是否正确`,
+                    'error'
+                );
+            }
+        }
+
+        async function testAuthRegister() {
+            updateResult('auth-register-result', '正在测试用户注册...', 'pending');
+
+            const testUser = {
+                username: `testuser${Date.now()}`,
+                password: '123456',
+                confirmPassword: '123456',
+                realName: '测试用户',
+                phone: '13800138000',
+                email: 'test@example.com',
+                department: '测试部门'
+            };
+
+            try {
+                const response = await fetch(`${BASE_URL}/auth-service/auth/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(testUser)
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.code === 200) {
+                    updateResult('auth-register-result',
+                        `✅ 注册成功！<br>
+                        用户名: ${testUser.username}<br>
+                        状态码: ${response.status}<br>
+                        响应: ${JSON.stringify(data, null, 2)}`,
+                        'success'
+                    );
+                } else {
+                    updateResult('auth-register-result',
+                        `⚠️ 响应成功但可能有问题<br>
+                        状态码: ${response.status}<br>
+                        响应: ${JSON.stringify(data, null, 2)}`,
+                        response.ok ? 'pending' : 'error'
+                    );
+                }
+            } catch (error) {
+                updateResult('auth-register-result',
+                    `❌ 错误！<br>
+                    错误信息: ${error.message}`,
+                    'error'
+                );
+            }
+        }
+
+        async function testSystemLaboratory() {
+            updateResult('system-laboratory-result', '正在测试系统服务...', 'pending');
+
+            try {
+                const response = await fetch(`${BASE_URL}/laboratory/running`, {
+                    method: 'GET'
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.code === 200) {
+                    updateResult('system-laboratory-result',
+                        `✅ 成功！<br>
+                        状态码: ${response.status}<br>
+                        响应: ${JSON.stringify(data, null, 2)}`,
+                        'success'
+                    );
+                } else {
+                    updateResult('system-laboratory-result',
+                        `❌ 失败！<br>
+                        状态码: ${response.status}<br>
+                        响应: ${JSON.stringify(data, null, 2)}`,
+                        'error'
+                    );
+                }
+            } catch (error) {
+                updateResult('system-laboratory-result',
+                    `❌ 错误！<br>
+                    错误信息: ${error.message}`,
+                    'error'
+                );
+            }
+        }
+
+        async function testMonitorHealth() {
+            updateResult('monitor-health-result', '正在测试监控服务健康检查...', 'pending');
+
+            try {
+                const response = await fetch(`${BASE_URL}/lab-monitor/health`, {
+                    method: 'GET'
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.code === 200) {
+                    updateResult('monitor-health-result',
+                        `✅ 成功！<br>
+                        状态码: ${response.status}<br>
+                        响应: ${JSON.stringify(data, null, 2)}`,
+                        'success'
+                    );
+                } else {
+                    updateResult('monitor-health-result',
+                        `❌ 失败！<br>
+                        状态码: ${response.status}<br>
+                        响应: ${JSON.stringify(data, null, 2)}`,
+                        'error'
+                    );
+                }
+            } catch (error) {
+                updateResult('monitor-health-result',
+                    `❌ 错误！<br>
+                    错误信息: ${error.message}`,
+                    'error'
+                );
+            }
+        }
+
+        async function testMonitorTest() {
+            updateResult('monitor-test-result', '正在测试监控服务接口...', 'pending');
+
+            try {
+                const response = await fetch(`${BASE_URL}/lab-monitor/test`, {
+                    method: 'GET'
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.code === 200) {
+                    updateResult('monitor-test-result',
+                        `✅ 成功！<br>
+                        状态码: ${response.status}<br>
+                        响应: ${JSON.stringify(data, null, 2)}`,
+                        'success'
+                    );
+                } else {
+                    updateResult('monitor-test-result',
+                        `❌ 失败！<br>
+                        状态码: ${response.status}<br>
+                        响应: ${JSON.stringify(data, null, 2)}`,
+                        'error'
+                    );
+                }
+            } catch (error) {
+                updateResult('monitor-test-result',
+                    `❌ 错误！<br>
+                    错误信息: ${error.message}`,
+                    'error'
+                );
+            }
+        }
+
+        async function checkConfig() {
+            updateResult('config-check-result', '正在检查配置...', 'pending');
+
+            let configInfo = '📋 配置检查结果：<br><br>';
+
+            // 检查当前页面URL
+            configInfo += `🌐 当前页面: ${window.location.href}<br>`;
+            configInfo += `🔗 API基础URL: ${BASE_URL}<br><br>`;
+
+            // 检查代理是否工作（通过尝试请求网关）
+            try {
+                const gatewayResponse = await fetch('http://localhost:8080/actuator/health', {
+                    method: 'GET'
+                });
+
+                if (gatewayResponse.ok) {
+                    configInfo += `✅ 网关服务 (8080端口): 可访问<br>`;
+                } else {
+                    configInfo += `⚠️ 网关服务 (8080端口): 状态异常<br>`;
+                }
+            } catch (error) {
+                configInfo += `❌ 网关服务 (8080端口): 不可访问 - ${error.message}<br>`;
+            }
+
+            // 检查前端Vite开发服务器代理配置
+            configInfo += `<br>📝 代理配置说明:<br>`;
+            configInfo += `- 前端请求: /api/auth-service/auth/login<br>`;
+            configInfo += `- Vite代理: http://localhost:8080 (不移除/api前缀)<br>`;
+            configInfo += `- 网关路由: /api/auth-service/**<br>`;
+            configInfo += `- 目标服务: http://localhost:8081<br>`;
+            configInfo += `- StripPrefix=1: 移除/api/auth-service<br><br>`;
+
+            configInfo += `🚀 下一步操作建议:<br>`;
+            configInfo += `1. 启动所有后端服务 (8081, 8082, 8083)<br>`;
+            configInfo += `2. 启动网关服务 (8080)<br>`;
+            configInfo += `3. 启动前端开发服务器 (3000)<br>`;
+            configInfo += `4. 使用本工具测试各个接口<br>`;
+            configInfo += `5. 在前端页面中登录测试`;
+
+            updateResult('config-check-result', configInfo, 'success');
+        }
+
+        // 页面加载时显示初始信息
+        window.onload = function() {
+            checkConfig();
+        };
+    </script>
+</body>
+</html>

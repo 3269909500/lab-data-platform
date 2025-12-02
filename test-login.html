@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-form {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .debug-info {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="debug-info">
+        <h3>🔧 调试信息</h3>
+        <div><strong>前端页面:</strong> http://localhost:3000/test-login.html</div>
+        <div><strong>目标API:</strong> http://localhost:8080/api/auth-service/auth/login</div>
+        <div><strong>请求流程:</strong></div>
+        <ul>
+            <li>1. 前端发送请求到 /api/auth-service/auth/login</li>
+            <li>2. Vite代理转发到 http://localhost:8080/api/auth-service/auth/login</li>
+            <li>3. 网关匹配路由 /api/auth-service/**</li>
+            <li>4. StripPrefix=2 移除 /api/auth-service</li>
+            <li>5. 转发到 http://localhost:8081/auth/login</li>
+        </ul>
+    </div>
+
+    <div class="test-form">
+        <h2>🔐 登录测试</h2>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">用户名:</label>
+                <input type="text" id="username" name="username" value="admin" required>
+            </div>
+            <div class="form-group">
+                <label for="password">密码:</label>
+                <input type="password" id="password" name="password" value="123456" required>
+            </div>
+            <div class="form-group">
+                <button type="submit" id="loginBtn">登录测试</button>
+            </div>
+        </form>
+
+        <div id="result" class="result info">点击按钮开始测试...</div>
+    </div>
+
+    <script>
+        const loginForm = document.getElementById('loginForm');
+        const loginBtn = document.getElementById('loginBtn');
+        const resultDiv = document.getElementById('result');
+
+        function updateResult(content, type = 'info') {
+            resultDiv.className = `result ${type}`;
+            resultDiv.textContent = content;
+        }
+
+        function showLoading() {
+            loginBtn.disabled = true;
+            loginBtn.textContent = '登录中...';
+            updateResult('正在发送登录请求...', 'info');
+        }
+
+        function hideLoading() {
+            loginBtn.disabled = false;
+            loginBtn.textContent = '登录测试';
+        }
+
+        async function testLogin() {
+            showLoading();
+
+            const formData = new FormData(loginForm);
+            const loginData = {
+                username: formData.get('username'),
+                password: formData.get('password')
+            };
+
+            console.log('🔍 准备发送登录请求:', loginData);
+
+            try {
+                const response = await fetch('/api/auth-service/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(loginData)
+                });
+
+                console.log('📡 收到响应:', {
+                    status: response.status,
+                    statusText: response.statusText,
+                    headers: Object.fromEntries(response.headers.entries())
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.code === 200) {
+                    console.log('✅ 登录成功:', data);
+                    updateResult(`✅ 登录成功！
+状态码: ${response.status}
+响应数据: ${JSON.stringify(data, null, 2)}
+
+🔑 Token: ${data.data.token}
+👤 用户信息: ${JSON.stringify(data.data.user, null, 2)}`, 'success');
+                } else {
+                    console.log('❌ 登录失败:', data);
+                    updateResult(`❌ 登录失败！
+状态码: ${response.status}
+响应数据: ${JSON.stringify(data, null, 2)}
+
+⚠️ 可能原因:
+1. 用户名或密码错误
+2. 认证服务未启动
+3. 网关路由配置错误
+4. CORS跨域问题`, 'error');
+                }
+
+            } catch (error) {
+                console.error('💥 网络错误:', error);
+                updateResult(`💥 网络错误！
+错误信息: ${error.message}
+
+🔧 检查项目:
+1. 网关服务是否在 8080 端口运行
+2. 认证服务是否在 8081 端口运行
+3. Vite 开发服务器是否在 3000 端口运行
+4. 浏览器开发者工具是否有其他错误`, 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await testLogin();
+        });
+
+        // 页面加载时显示初始信息
+        window.addEventListener('load', () => {
+            console.log('🚀 页面加载完成，开始测试环境检查...');
+
+            // 检查是否在正确的开发环境
+            if (window.location.port === '3000') {
+                console.log('✅ 前端开发服务器端口正确: 3000');
+            } else {
+                console.warn('⚠️ 前端端口异常:', window.location.port);
+            }
+
+            // 测试网关连接
+            fetch('/api/auth-service/auth/health')
+                .then(response => {
+                    console.log('✅ 网关连接正常:', response.status);
+                })
+                .catch(error => {
+                    console.warn('⚠️ 网关连接失败:', error);
+                });
+        });
+    </script>
+</body>
+</html>
