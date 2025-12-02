@@ -1,5 +1,9 @@
 package com.sewage.monitor;
 
+/**
+ * 监控服务启动类 - 实验室环境监控服务
+ */
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;

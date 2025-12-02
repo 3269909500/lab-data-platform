@@ -7,7 +7,7 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.annotation.ComponentScan;
 
 /**
- * 认证服务启动类
+ * 认证服务启动类 - 用户认证相关服务
  */
 @SpringBootApplication
 @EnableDiscoveryClient

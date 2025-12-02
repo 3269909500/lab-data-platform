@@ -1,0 +1,80 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: gateway-service
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.31.211:8848  # 修改为新IP
+        namespace: lab-data-platform
+        group: DEFAULT_GROUP
+        username: nacos
+        password: nacos
+        timeout: 10000
+        fail-fast: false
+        register-enabled: true  # 启用服务注册
+    gateway:
+      discovery:
+        locator:
+          enabled: false  # 禁用自动发现，使用手动配置
+      routes:
+        - id: auth-service
+          uri: http://localhost:8081  # 先用直接地址测试
+          predicates:
+            - Path=/api/auth-service/**
+          filters:
+            - StripPrefix=2
+        # 临时测试路由
+        - id: auth-test
+          uri: http://localhost:8081
+          predicates:
+            - Path=/test/**
+          filters:
+            - StripPrefix=1
+
+        - id: system-service
+          uri: http://localhost:8082
+          predicates:
+            - Path=/api/system-service/**
+          filters:
+            - StripPrefix=2
+
+        - id: monitor-service
+          uri: http://localhost:8083
+          predicates:
+            - Path=/api/monitor-service/**
+          filters:
+            - StripPrefix=2
+
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowed-origins:
+              - "http://localhost:3000"
+              - "http://127.0.0.1:3000"
+            allowed-methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+              - PATCH
+            allowed-headers:
+              - "*"
+            allow-credentials: true
+            max-age: 3600
+            exposed-headers:
+              - "Content-Type"
+              - "Authorization"
+              - "Set-Cookie"
+
+jwt:
+  secret: 1234567890123456789012345678901234567890123456789012345678901234
+  expiration: 86400000
+
+logging:
+  level:
+    com.sewage.gateway: debug
+    org.springframework.cloud.gateway: debug

@@ -1,0 +1,42 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir:*)",
+      "Bash(tree:*)",
+      "Bash(done)",
+      "Bash(find:*)",
+      "Bash(mysql:*)",
+      "Bash(mvn:*)",
+      "Bash(./mvnw:*)",
+      "Bash(chmod:*)",
+      "Bash(docker info:*)",
+      "Bash(tar:*)",
+      "Bash(del:*)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(jps:*)",
+      "Bash(where mvn)",
+      "Bash(test-redis-connection.bat:*)",
+      "Bash(cmd.exe:*)",
+      "Bash(java:*)",
+      "Bash(./mvnw.cmd:*)",
+      "Bash(curl:*)",
+      "Bash(javac:*)",
+      "Bash(tasklist:*)",
+      "Bash(taskkill:*)",
+      "Bash(start cmd:*)",
+      "Bash(timeout:*)",
+      "Bash(redis-server:*)",
+      "Bash(powershell \"Stop-Process -Id 23476 -Force\")",
+      "Bash(cat:*)",
+      "Bash(ssh:*)",
+      "Bash(mysqldump:*)",
+      "Bash(git push:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git pull:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

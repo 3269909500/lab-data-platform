@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>登录接口测试</title>
+    <script>
+        async function testLogin(username, password) {
+            const response = await fetch('http://localhost:8080/api/auth-service/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    username: username,
+                    password: password
+                })
+            });
+
+            const result = await response.json();
+            console.log('登录结果:', result);
+            document.getElementById('result').innerHTML = JSON.stringify(result, null, 2);
+        }
+
+        function testAdmin() {
+            testLogin('admin', 'admin123');
+        }
+
+        function testOperator() {
+            testLogin('operator', 'operator123');
+        }
+
+        function testUser() {
+            testLogin('user', 'user123');
+        }
+
+        // 直接测试认证服务
+        async function testDirectAuth(username, password) {
+            const response = await fetch('http://localhost:8081/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    username: username,
+                    password: password
+                })
+            });
+
+            const result = await response.json();
+            console.log('直接认证结果:', result);
+            document.getElementById('result').innerHTML = '直接认证结果:\n' + JSON.stringify(result, null, 2);
+        }
+
+        function testDirectAdmin() {
+            testDirectAuth('admin', 'admin123');
+        }
+    </script>
+</head>
+<body>
+    <h1>登录接口测试</h1>
+    <button onclick="testAdmin()">测试管理员登录 (admin/admin123)</button><br><br>
+    <button onclick="testOperator()">测试操作员登录 (operator/operator123)</button><br><br>
+    <button onclick="testUser()">测试用户登录 (user/user123)</button><br><br>
+
+    <h2>直接测试认证服务</h2>
+    <button onclick="testDirectAdmin()">直接测试管理员登录</button><br><br>
+
+    <h2>测试结果:</h2>
+    <pre id="result"></pre>
+</body>
+</html>
