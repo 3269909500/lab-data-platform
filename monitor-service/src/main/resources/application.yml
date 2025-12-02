@@ -6,15 +6,53 @@ spring:
     name: monitor-service
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/wastewater_system?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&useSSL=false
+    url: jdbc:mysql://192.168.31.211:3307/lab_data_platform?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&useSSL=false
     username: root
-    password: hzt20031221  # 你的密码
+    password: 123456
   cloud:
     nacos:
       discovery:
-        server-addr: localhost:8848
-        namespace: wastewater-system
+        server-addr: 192.168.31.211:8848
+        namespace: lab-data-platform
         group: DEFAULT_GROUP
+        username: nacos
+        password: nacos
+        timeout: 10000
+        fail-fast: false
+        register-enabled: true
+  # Kafka配置
+  kafka:
+    bootstrap-servers: 192.168.31.211:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    consumer:
+      group-id: monitor-service-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      auto-offset-reset: earliest
+  # Redis配置
+  redis:
+    host: 192.168.31.211
+    port: 6379
+    password:
+    database: 0
+    timeout: 3000ms
+    lettuce:
+      pool:
+        max-active: 20
+        max-wait: -1ms
+        max-idle: 10
+        min-idle: 0
+      shutdown-timeout: 100ms
+  # 缓存配置
+  cache:
+    type: redis
+    redis:
+      time-to-live: 300000  # 默认5分钟
+      key-prefix: "lab:"
+      use-key-prefix: true
+      cache-null-values: true
 
 mybatis-plus:
   configuration:

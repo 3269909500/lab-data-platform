@@ -108,7 +108,7 @@ public class JwtUtil {
     /**
      * 检查令牌是否过期
      */
-    private Boolean isTokenExpired(String token) {
+    public Boolean isTokenExpired(String token) {
         try {
             Claims claims = getAllClaimsFromToken(token);
             Date expiration = claims.getExpiration();

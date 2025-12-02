@@ -2,8 +2,8 @@ package com.sewage.system.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.sewage.system.entity.TreatmentPlant;
-import com.sewage.system.mapper.TreatmentPlantMapper;
+import com.sewage.system.entity.Laboratory;
+import com.sewage.system.mapper.LaboratoryMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -14,24 +14,24 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class TreatmentPlantService {
+public class LaboratoryService {
 
-    private final TreatmentPlantMapper plantMapper;
+    private final LaboratoryMapper plantMapper;
 
     /**
      * 分页查询处理厂
      */
-    public Page<TreatmentPlant> getPageData(int current, int size, String name, Integer status) {
-        Page<TreatmentPlant> page = new Page<>(current, size);
-        LambdaQueryWrapper<TreatmentPlant> wrapper = new LambdaQueryWrapper<>();
+    public Page<Laboratory> getPageData(int current, int size, String name, Integer status) {
+        Page<Laboratory> page = new Page<>(current, size);
+        LambdaQueryWrapper<Laboratory> wrapper = new LambdaQueryWrapper<>();
 
         if (StringUtils.hasText(name)) {
-            wrapper.like(TreatmentPlant::getPlantName, name);
+            wrapper.like(Laboratory::getLabName, name);
         }
         if (status != null) {
-            wrapper.eq(TreatmentPlant::getStatus, status);
+            wrapper.eq(Laboratory::getStatus, status);
         }
-        wrapper.orderByDesc(TreatmentPlant::getCreatedTime);
+        wrapper.orderByDesc(Laboratory::getCreatedTime);
 
         return plantMapper.selectPage(page, wrapper);
     }
@@ -39,20 +39,20 @@ public class TreatmentPlantService {
     /**
      * 新增处理厂
      */
-    public void addPlant(TreatmentPlant plant) {
+    public void addPlant(Laboratory plant) {
         plant.setCreatedTime(LocalDateTime.now());
-        plant.setUpdatedTime(LocalDateTime.now());
+        plant.setUpdateTime(LocalDateTime.now());
         plantMapper.insert(plant);
-        log.info("新增处理厂成功: {}", plant.getPlantName());
+        log.info("新增实验室成功: {}", plant.getLabName());
     }
 
     /**
      * 更新处理厂
      */
-    public void updatePlant(TreatmentPlant plant) {
-        plant.setUpdatedTime(LocalDateTime.now());
+    public void updatePlant(Laboratory plant) {
+        plant.setUpdateTime(LocalDateTime.now());
         plantMapper.updateById(plant);
-        log.info("更新处理厂成功: {}", plant.getPlantName());
+        log.info("更新实验室成功: {}", plant.getLabName());
     }
 
     /**
@@ -60,20 +60,20 @@ public class TreatmentPlantService {
      */
     public void deletePlant(Long id) {
         plantMapper.deleteById(id);
-        log.info("删除处理厂成功: {}", id);
+        log.info("删除实验室成功: {}", id);
     }
 
     /**
      * 根据ID查询
      */
-    public TreatmentPlant getById(Long id) {
+    public Laboratory getById(Long id) {
         return plantMapper.selectById(id);
     }
 
     /**
      * 获取所有运行中的处理厂
      */
-    public List<TreatmentPlant> getRunningPlants() {
+    public List<Laboratory> getRunningPlants() {
         return plantMapper.getByStatus(1);
     }
 }

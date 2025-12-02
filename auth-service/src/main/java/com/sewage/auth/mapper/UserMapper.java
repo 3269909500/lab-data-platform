@@ -32,6 +32,12 @@ public interface UserMapper extends BaseMapper<User> {
     int countByPhone(@Param("phone") String phone);
 
     /**
+     * 根据邮箱检查用户是否存在
+     */
+    @Select("SELECT COUNT(*) FROM sys_user WHERE email = #{email}")
+    int countByEmail(@Param("email") String email);
+
+    /**
      * 更新用户最后登录时间和IP
      */
     @Update("UPDATE sys_user SET last_login_time = #{loginTime}, last_login_ip = #{loginIp} WHERE id = #{userId}")

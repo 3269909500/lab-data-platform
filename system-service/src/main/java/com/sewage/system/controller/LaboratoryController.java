@@ -2,8 +2,8 @@ package com.sewage.system.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.sewage.common.result.Result;
-import com.sewage.system.entity.TreatmentPlant;
-import com.sewage.system.service.TreatmentPlantService;
+import com.sewage.system.entity.Laboratory;
+import com.sewage.system.service.LaboratoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -11,22 +11,22 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/plant")
+@RequestMapping("/laboratory")
 @RequiredArgsConstructor
-public class TreatmentPlantController {
+public class LaboratoryController {
 
-    private final TreatmentPlantService plantService;
+    private final LaboratoryService plantService;
 
     /**
      * 分页查询处理厂
      */
     @GetMapping("/page")
-    public Result<Page<TreatmentPlant>> getPageData(
+    public Result<Page<Laboratory>> getPageData(
             @RequestParam(defaultValue = "1") int current,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String name,
             @RequestParam(required = false) Integer status) {
-        Page<TreatmentPlant> page = plantService.getPageData(current, size, name, status);
+        Page<Laboratory> page = plantService.getPageData(current, size, name, status);
         return Result.success(page);
     }
 
@@ -34,7 +34,7 @@ public class TreatmentPlantController {
      * 新增处理厂
      */
     @PostMapping
-    public Result<String> addPlant(@RequestBody TreatmentPlant plant) {
+    public Result<String> addPlant(@RequestBody Laboratory plant) {
         plantService.addPlant(plant);
         return Result.success("新增成功");
     }
@@ -43,7 +43,7 @@ public class TreatmentPlantController {
      * 更新处理厂
      */
     @PutMapping
-    public Result<String> updatePlant(@RequestBody TreatmentPlant plant) {
+    public Result<String> updatePlant(@RequestBody Laboratory plant) {
         plantService.updatePlant(plant);
         return Result.success("更新成功");
     }
@@ -61,8 +61,8 @@ public class TreatmentPlantController {
      * 根据ID查询
      */
     @GetMapping("/{id}")
-    public Result<TreatmentPlant> getById(@PathVariable Long id) {
-        TreatmentPlant plant = plantService.getById(id);
+    public Result<Laboratory> getById(@PathVariable Long id) {
+        Laboratory plant = plantService.getById(id);
         return Result.success(plant);
     }
 
@@ -70,8 +70,8 @@ public class TreatmentPlantController {
      * 获取所有运行中的处理厂
      */
     @GetMapping("/running")
-    public Result<List<TreatmentPlant>> getRunningPlants() {
-        List<TreatmentPlant> plants = plantService.getRunningPlants();
+    public Result<List<Laboratory>> getRunningPlants() {
+        List<Laboratory> plants = plantService.getRunningPlants();
         return Result.success(plants);
     }
 }

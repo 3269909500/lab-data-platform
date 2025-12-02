@@ -6,12 +6,12 @@
         <modelVersion>4.0.0</modelVersion>
 
         <groupId>com.sewage</groupId>
-        <artifactId>wastewater-treatment-system</artifactId>
+        <artifactId>lab-data-platform</artifactId>
         <version>1.0.0</version>
         <packaging>pom</packaging>
 
-        <name>污水处理系统</name>
-        <description>污水处理监控和管理系统</description>
+        <name>实验室数据中台</name>
+        <description>校园实验室物联网数据中台系统</description>
 
         <parent>
             <groupId>org.springframework.boot</groupId>
@@ -35,7 +35,7 @@
             <spring-cloud.version>2021.0.8</spring-cloud.version>
             <spring-cloud-alibaba.version>2021.0.5.0</spring-cloud-alibaba.version>
             <mysql.version>8.0.33</mysql.version>
-            <mybatis-plus.version>3.5.4</mybatis-plus.version>
+            <mybatis-plus.version>3.5.3.1</mybatis-plus.version>
             <jwt.version>0.11.5</jwt.version>
             <springdoc.version>2.2.0</springdoc.version>
             <kafka.version>3.5.1</kafka.version>
@@ -60,6 +60,13 @@
                     <version>${spring-cloud-alibaba.version}</version>
                     <type>pom</type>
                     <scope>import</scope>
+                </dependency>
+
+                <!-- Spring Boot JDBC -->
+                <dependency>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-jdbc</artifactId>
+                    <version>2.7.18</version>
                 </dependency>
 
                 <!-- MySQL -->
@@ -141,10 +148,6 @@
                     <artifactId>spring-boot-maven-plugin</artifactId>
                     <configuration>
                         <excludes>
-                            <exclude>
-                                <groupId>com.sewage</groupId>
-                                <artifactId>common</artifactId>
-                            </exclude>
                             <exclude>
                                 <groupId>com.sewage</groupId>
                                 <artifactId>common</artifactId>
