@@ -1,0 +1,5 @@
+com\sewage\system\controller\LaboratoryController.class
+com\sewage\system\service\LaboratoryService.class
+com\sewage\system\mapper\LaboratoryMapper.class
+com\sewage\system\SystemServiceApplication.class
+com\sewage\system\entity\Laboratory.class

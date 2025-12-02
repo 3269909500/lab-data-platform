@@ -1,0 +1,3 @@
+com\sewage\gateway\filter\AuthFilter$Config.class
+com\sewage\gateway\filter\AuthFilter.class
+com\sewage\gateway\GatewayApplication.class

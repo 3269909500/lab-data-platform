@@ -1,0 +1,33 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: system-service
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://192.168.31.211:3307/lab_data_platform?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&useSSL=false
+    username: root
+    password: 123456
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.31.211:8848
+        namespace: lab-data-platform
+        group: DEFAULT_GROUP
+        username: nacos
+        password: nacos
+        timeout: 10000  # 连接超时时间
+        heart-beat-interval: 5000  # 心跳间隔
+        heart-beat-timeout: 15000  # 心跳超时
+        fail-fast: false  # 连接失败时不立即终止应用
+        register-enabled: true  # 启用服务注册
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+logging:
+  level:
+    com.sewage.system: debug

@@ -1,0 +1,52 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: auth-service
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://192.168.31.211:3307/lab_data_platform?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&useSSL=false
+    username: root
+    password: 123456  # 连接虚拟机MySQL
+  redis:
+    host: 192.168.31.211  # 连接虚拟机Redis
+    port: 6379
+    password:  # Redis密码（如果有）
+    database: 0  # Redis数据库索引
+    timeout: 3000ms  # 连接超时时间
+    lettuce:
+      pool:
+        max-active: 8  # 连接池最大连接数
+        max-wait: -1ms  # 连接池最大阻塞等待时间
+        max-idle: 8  # 连接池中的最大空闲连接
+        min-idle: 0  # 连接池中的最小空闲连接
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.31.211:8848  # 连接虚拟机Nacos
+        namespace: lab-data-platform  # 实验室数据中台命名空间
+        group: DEFAULT_GROUP
+        username: nacos  # Nacos认证
+        password: nacos
+        timeout: 10000  # 连接超时时间
+        heart-beat-interval: 5000  # 心跳间隔
+        heart-beat-timeout: 15000  # 心跳超时
+        ip-delete-timeout: 30000  # IP删除超时
+        fail-fast: false  # 连接失败时不立即终止应用
+        register-enabled: true  # 启用服务注册
+      config:
+        enabled: false  # 暂时禁用配置中心，避免连接失败
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+jwt:
+  secret: 1234567890123456789012345678901234567890123456789012345678901234
+  expiration: 86400000
+
+logging:
+  level:
+    com.sewage.auth: debug

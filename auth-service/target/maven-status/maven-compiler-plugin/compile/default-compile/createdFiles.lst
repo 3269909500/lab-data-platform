@@ -1,0 +1,9 @@
+com\sewage\auth\dto\RegisterRequest.class
+com\sewage\auth\AuthServiceApplication.class
+com\sewage\auth\dto\LoginResponse$LoginResponseBuilder.class
+com\sewage\auth\dto\LoginRequest.class
+com\sewage\auth\service\AuthServiceSimple.class
+com\sewage\auth\dto\LoginResponse.class
+com\sewage\auth\mapper\UserMapper.class
+com\sewage\auth\config\MybatisPlusConfig.class
+com\sewage\auth\controller\AuthController.class
