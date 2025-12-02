@@ -1,0 +1,31 @@
+# IDE
+.idea/
+.claude/
+*.iml
+
+# 测试和临时文件
+*.sql
+*.html
+*.bat
+app-compose.yml
+start-docker-services.sh
+test-services.sh
+
+# 文档（保留README.md）
+使用指南-从零开始学习.md
+前端实现指南.md
+多租户网课平台实现题.md
+面试问答手册.md
+面试项目介绍指南.md
+项目学习指南.md
+实验室物联数据中台-面试问答手册（第1部分）.md
+实验室物联数据中台-面试问答手册（第2部分）.md
+实验室物联数据中台-面试问答手册（第3部分）.md
+
+# Maven
+target/
+*.jar
+*.war
+
+# Logs
+*.log
